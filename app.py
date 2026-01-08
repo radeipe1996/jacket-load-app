@@ -116,7 +116,7 @@ leg_positions = {
 }
 
 # Dimensions for squares
-square_size = 0.15  # half-width of the square
+square_size = 0.25  # half-width of the square
 
 fig = go.Figure()
 
