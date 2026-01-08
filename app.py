@@ -116,7 +116,7 @@ leg_positions = {
 }
 
 # Dimensions for squares
-square_size = 0.15  # half-width for connecting lines
+square_size = 0.15  # half-width for potential future lines
 
 fig = go.Figure()
 
@@ -127,7 +127,7 @@ for leg, (x, y) in leg_positions.items():
     actual_bar = next(r[3] for r in results if r[0].startswith(leg))
 
     # Color coding
-    color = "red" if actual_pct < min_pct else "gold"
+    color = "green" if actual_pct >= min_pct else "red"
 
     # Text inside square (slightly shifted)
     y_text = y - 0.02 if leg in ["A", "B"] else y + 0.02
@@ -155,30 +155,6 @@ for leg, (x, y) in leg_positions.items():
             ),
             showlegend=False,
         )
-    )
-
-# ---------------- Draw thick yellow jacket frame connecting squares ----------------
-# Connect A → B → C → D → A (loop)
-lines = [("A", "B"), ("B", "C"), ("C", "D"), ("D", "A")]
-for start_leg, end_leg in lines:
-    x0, y0 = leg_positions[start_leg]
-    x1, y1 = leg_positions[end_leg]
-
-    # Adjust start/end to connect **outside middle of square**
-    if start_leg in ["A", "D"]:  # left squares
-        x0 -= square_size/2
-    else:  # right squares
-        x0 += square_size/2
-
-    if end_leg in ["A", "D"]:  # left squares
-        x1 -= square_size/2
-    else:  # right squares
-        x1 += square_size/2
-
-    fig.add_shape(
-        type="line",
-        x0=x0, y0=y0, x1=x1, y1=y1,
-        line=dict(color="yellow", width=6)
     )
 
 # ---------------- Add "BL" small square outside BP (leg A) ----------------
