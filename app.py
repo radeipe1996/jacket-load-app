@@ -171,13 +171,6 @@ fig.add_shape(type="line", x0=offset_max, y0=offset_min, x1=offset_max, y1=offse
 fig.add_shape(type="line", x0=offset_max, y0=offset_max, x1=offset_min, y1=offset_max, line=dict(color="black", width=2))  # top
 fig.add_shape(type="line", x0=offset_min, y0=offset_max, x1=offset_min, y1=offset_min, line=dict(color="black", width=2))  # left
 
-fig.update_layout(
-    xaxis=dict(visible=False, range=[-0.3, 1.3]),
-    yaxis=dict(visible=False, range=[-0.3, 1.3]),
-    height=450,
-    margin=dict(l=10, r=10, t=10, b=10),
-)
-
 st.plotly_chart(fig, use_container_width=True)
 
 # ---------------- Pressure Min/Actual fields ----------------
