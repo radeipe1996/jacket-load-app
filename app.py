@@ -116,12 +116,7 @@ leg_positions = {
 }
 
 # Dimensions for squares
-square_size = 0.15  # half-width of the square for positioning lines
-
-# Central circle
-center_x = 0.5
-center_y = 0.5
-center_radius = 0.07
+square_size = 0.15  # half-width for connecting lines
 
 fig = go.Figure()
 
@@ -132,18 +127,10 @@ for leg, (x, y) in leg_positions.items():
     actual_bar = next(r[3] for r in results if r[0].startswith(leg))
 
     # Color coding
-    if actual_pct < min_pct:
-        color = "red"
-    elif actual_pct < min_pct + 5:
-        color = "yellow"
-    else:
-        color = "green"
+    color = "red" if actual_pct < min_pct else "gold"
 
-    # Text position inside square (slightly shifted to stay inside)
-    if leg in ["A", "B"]:
-        y_text = y - 0.02  # slightly lower inside top squares
-    else:
-        y_text = y + 0.02  # slightly higher inside bottom squares
+    # Text inside square (slightly shifted)
+    y_text = y - 0.02 if leg in ["A", "B"] else y + 0.02
 
     fig.add_trace(
         go.Scatter(
@@ -156,7 +143,8 @@ for leg, (x, y) in leg_positions.items():
                 symbol="square",
                 line=dict(width=2, color="black"),
             ),
-            text=[f"<b style='color:black'>{leg} <b style='color:black'>/</b> {actual_pct:.1f}%</b> / <b style='color:black'>{min_pct:.1f}%</b>"],
+            text=[f"<b style='color:black'>{leg}</b><br>"
+                  f"<b style='color:black'>{actual_pct:.1f}%</b> / <b style='color:black'>{min_pct:.1f}%</b>"],
             textposition="middle center",
             textfont=dict(size=16),
             hovertemplate=(
@@ -169,41 +157,33 @@ for leg, (x, y) in leg_positions.items():
         )
     )
 
-# ---------------- Draw diagonal lines from outer middle of squares to center ----------------
-for leg, (x, y) in leg_positions.items():
-    # Connect to outer middle of square
-    if leg == "A":  # left top
-        start_x = x - square_size/2
-        start_y = y
-    elif leg == "B":  # right top
-        start_x = x + square_size/2
-        start_y = y
-    elif leg == "C":  # right bottom
-        start_x = x + square_size/2
-        start_y = y
-    else:  # D left bottom
-        start_x = x - square_size/2
-        start_y = y
+# ---------------- Draw thick yellow jacket frame connecting squares ----------------
+# Connect A → B → C → D → A (loop)
+lines = [("A", "B"), ("B", "C"), ("C", "D"), ("D", "A")]
+for start_leg, end_leg in lines:
+    x0, y0 = leg_positions[start_leg]
+    x1, y1 = leg_positions[end_leg]
+
+    # Adjust start/end to connect **outside middle of square**
+    if start_leg in ["A", "D"]:  # left squares
+        x0 -= square_size/2
+    else:  # right squares
+        x0 += square_size/2
+
+    if end_leg in ["A", "D"]:  # left squares
+        x1 -= square_size/2
+    else:  # right squares
+        x1 += square_size/2
 
     fig.add_shape(
         type="line",
-        x0=start_x, y0=start_y,
-        x1=center_x, y1=center_y,
-        line=dict(color="black", width=2)
+        x0=x0, y0=y0, x1=x1, y1=y1,
+        line=dict(color="yellow", width=6)
     )
 
-# ---------------- Draw central circle ----------------
-fig.add_shape(
-    type="circle",
-    x0=center_x-center_radius, x1=center_x+center_radius,
-    y0=center_y-center_radius, y1=center_y+center_radius,
-    line=dict(color="black", width=2),
-    fillcolor="lightgrey"
-)
-
 # ---------------- Add "BL" small square outside BP (leg A) ----------------
-bl_x = leg_positions["A"][0] - 0.12  # slightly to the left of leg A
-bl_y = leg_positions["A"][1] + 0.05  # slightly above leg A
+bl_x = leg_positions["A"][0] - 0.12
+bl_y = leg_positions["A"][1] + 0.05
 fig.add_trace(
     go.Scatter(
         x=[bl_x],
