@@ -161,11 +161,15 @@ for leg, (x, y) in leg_positions.items():
         )
     )
 
-# Draw jacket frame
-fig.add_shape(type="line", x0=0, y0=0, x1=1, y1=0)
-fig.add_shape(type="line", x0=1, y0=0, x1=1, y1=1)
-fig.add_shape(type="line", x0=1, y0=1, x1=0, y1=1)
-fig.add_shape(type="line", x0=0, y0=1, x1=0, y1=0)
+# ---------------- Draw jacket frame ----------------
+# Offset to connect squares at their mid-height
+offset_min = 0.15
+offset_max = 0.85
+
+fig.add_shape(type="line", x0=offset_min, y0=offset_min, x1=offset_max, y1=offset_min, line=dict(color="black", width=2))  # bottom
+fig.add_shape(type="line", x0=offset_max, y0=offset_min, x1=offset_max, y1=offset_max, line=dict(color="black", width=2))  # right
+fig.add_shape(type="line", x0=offset_max, y0=offset_max, x1=offset_min, y1=offset_max, line=dict(color="black", width=2))  # top
+fig.add_shape(type="line", x0=offset_min, y0=offset_max, x1=offset_min, y1=offset_min, line=dict(color="black", width=2))  # left
 
 fig.update_layout(
     xaxis=dict(visible=False, range=[-0.3, 1.3]),
