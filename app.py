@@ -129,17 +129,17 @@ for leg, (x, y) in leg_positions.items():
     else:
         color = "green"
 
-    # Text position per leg
+    # Shift text inside the square (y offset)
     if leg in ["A", "B"]:
-        pos = "top"
+        y_offset = 0.85  # slightly lower than top
     else:
-        pos = "bottom center"
+        y_offset = 0.15  # slightly above bottom
 
-    # Add marker with bold letters and % black, hover info
+    # Text inside square, bold black
     fig.add_trace(
         go.Scatter(
             x=[x],
-            y=[y],
+            y=[y_offset],
             mode="markers+text",
             marker=dict(
                 size=100,
@@ -149,7 +149,7 @@ for leg, (x, y) in leg_positions.items():
             ),
             text=[f"<b style='color:black'>{leg}</b><br>"
                   f"<b style='color:black'>{actual_pct:.1f}%</b> / <b style='color:black'>{min_pct:.1f}%</b>"],
-            textposition=pos,
+            textposition="middle center",  # centered on adjusted y
             textfont=dict(size=16),
             hovertemplate=(
                 f"<b>{LEG_NAMES[leg]}</b><br>"
