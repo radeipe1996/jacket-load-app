@@ -107,6 +107,7 @@ for leg, p in pressures.items():
 # ---------------- Jacket Visualization ----------------
 st.subheader("Jacket Load Distribution")
 
+# Leg positions (x,y)
 leg_positions = {
     "A": (0, 1),
     "B": (1, 1),
@@ -114,8 +115,14 @@ leg_positions = {
     "D": (0, 0),
 }
 
+# Central circle position
+center_x = 0.5
+center_y = 0.5
+center_radius = 0.07
+
 fig = go.Figure()
 
+# Draw legs as markers with text
 for leg, (x, y) in leg_positions.items():
     actual_pct = next(r[1] for r in results if r[0].startswith(leg))
     min_pct = limits[leg]
@@ -129,13 +136,12 @@ for leg, (x, y) in leg_positions.items():
     else:
         color = "green"
 
-    # Shift text inside the square (y offset)
+    # Text inside square
     if leg in ["A", "B"]:
-        y_offset = 0.85  # slightly lower than top
+        y_offset = 0.85
     else:
-        y_offset = 0.15  # slightly above bottom
+        y_offset = 0.15
 
-    # Text inside square, bold black
     fig.add_trace(
         go.Scatter(
             x=[x],
@@ -149,7 +155,7 @@ for leg, (x, y) in leg_positions.items():
             ),
             text=[f"<b style='color:black'>{leg}</b><br>"
                   f"<b style='color:black'>{actual_pct:.1f}%</b> / <b style='color:black'>{min_pct:.1f}%</b>"],
-            textposition="middle center",  # centered on adjusted y
+            textposition="middle center",
             textfont=dict(size=16),
             hovertemplate=(
                 f"<b>{LEG_NAMES[leg]}</b><br>"
@@ -161,22 +167,53 @@ for leg, (x, y) in leg_positions.items():
         )
     )
 
-# ---------------- Draw jacket frame ----------------
-# Offset to connect squares at their mid-height
-offset_min = 0.1
-offset_max = 0.95
+# ---------------- Draw diagonal lines to center ----------------
+for leg, (x, y) in leg_positions.items():
+    fig.add_shape(
+        type="line",
+        x0=x, y0=y,
+        x1=center_x, y1=center_y,
+        line=dict(color="black", width=2)
+    )
 
-fig.add_shape(type="line", x0=offset_min, y0=offset_min, x1=offset_max, y1=offset_min, line=dict(color="black", width=2))  # bottom
-fig.add_shape(type="line", x0=offset_max, y0=offset_min, x1=offset_max, y1=offset_max, line=dict(color="black", width=2))  # right
-fig.add_shape(type="line", x0=offset_max, y0=offset_max, x1=offset_min, y1=offset_max, line=dict(color="black", width=2))  # top
-fig.add_shape(type="line", x0=offset_min, y0=offset_max, x1=offset_min, y1=offset_min, line=dict(color="black", width=2))  # left
+# ---------------- Draw central circle ----------------
+fig.add_shape(
+    type="circle",
+    x0=center_x-center_radius, x1=center_x+center_radius,
+    y0=center_y-center_radius, y1=center_y+center_radius,
+    line=dict(color="black", width=2),
+    fillcolor="lightgrey"
+)
+
+# ---------------- Add "BL" small square outside BP (leg A) ----------------
+bl_x = leg_positions["A"][0] - 0.12  # slightly to the left of leg A
+bl_y = leg_positions["A"][1] + 0.05  # slightly above leg A
+fig.add_trace(
+    go.Scatter(
+        x=[bl_x],
+        y=[bl_y],
+        mode="markers+text",
+        marker=dict(
+            size=30,
+            color="white",
+            symbol="square",
+            line=dict(width=2, color="black")
+        ),
+        text=["<b>BL</b>"],
+        textposition="middle center",
+        textfont=dict(size=12, color="black"),
+        showlegend=False,
+        hoverinfo="skip"
+    )
+)
 
 fig.update_layout(
     xaxis=dict(visible=False, range=[-0.3, 1.3]),
     yaxis=dict(visible=False, range=[-0.3, 1.3]),
-    height=450,
+    height=500,
     margin=dict(l=20, r=20, t=20, b=20),
 )
+
 st.plotly_chart(fig, use_container_width=True)
 
 # ---------------- Pressure Min/Actual fields ----------------
