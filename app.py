@@ -104,19 +104,16 @@ for leg, p in pressures.items():
         failed.append(LEG_NAMES[leg])
     results.append((LEG_NAMES[leg], pct, limits[leg], p))  # also store actual pressure
 
-# ---------------- Jacket Visualization ----------------
+# ---------------- Jacket Visualization (mobile-friendly) ----------------
 st.subheader("Jacket Load Distribution")
 
-# Leg positions (compact)
+# Leg positions (compact for mobile)
 leg_positions = {
     "A": (0.35, 0.65),  # top-left
     "B": (0.65, 0.65),  # top-right
     "C": (0.65, 0.35),  # bottom-right
     "D": (0.35, 0.35),  # bottom-left
 }
-
-# Dimensions for squares
-square_size = 0.15  # for potential future connections
 
 fig = go.Figure()
 
@@ -129,7 +126,7 @@ for leg, (x, y) in leg_positions.items():
     # Color coding: green if above min, red if below
     color = "green" if actual_pct >= min_pct else "red"
 
-    # Text inside square (slightly shifted)
+    # Text inside square
     y_text = y - 0.02 if leg in ["A", "B"] else y + 0.02
 
     fig.add_trace(
@@ -138,7 +135,7 @@ for leg, (x, y) in leg_positions.items():
             y=[y_text],
             mode="markers+text",
             marker=dict(
-                size=140,  # increased from 100 → bigger squares
+                size=100,  # slightly smaller for mobile
                 color=color,
                 symbol="square",
                 line=dict(width=2, color="black"),
@@ -146,7 +143,7 @@ for leg, (x, y) in leg_positions.items():
             text=[f"<b style='color:black'>{leg}</b><br>"
                   f"<b style='color:black'>{actual_pct:.1f}%</b> / <b style='color:black'>{min_pct:.1f}%</b>"],
             textposition="middle center",
-            textfont=dict(size=18),  # slightly larger font
+            textfont=dict(size=16),  # readable on mobile
             hovertemplate=(
                 f"<b>{LEG_NAMES[leg]}</b><br>"
                 f"Pressure: {actual_bar:.2f} bar<br>"
@@ -157,8 +154,8 @@ for leg, (x, y) in leg_positions.items():
         )
     )
 
-# ---------------- Add "BL" small square outside left of leg A ----------------
-bl_x = leg_positions["A"][0] - 0.14  # slightly further left to accommodate bigger square
+# BL square left of leg A
+bl_x = leg_positions["A"][0] - 0.12
 bl_y = leg_positions["A"][1]
 fig.add_trace(
     go.Scatter(
@@ -166,7 +163,7 @@ fig.add_trace(
         y=[bl_y],
         mode="markers+text",
         marker=dict(
-            size=30,
+            size=25,
             color="white",
             symbol="square",
             line=dict(width=2, color="black")
@@ -182,12 +179,33 @@ fig.add_trace(
 fig.update_layout(
     xaxis=dict(visible=False, range=[0, 1]),
     yaxis=dict(visible=False, range=[0, 1]),
-    height=500,
-    width=500,
-    margin=dict(l=20, r=20, t=20, b=20),
+    height=400,   # shorter for mobile
+    width=400,
+    margin=dict(l=10, r=10, t=10, b=10),
 )
 
 st.plotly_chart(fig, use_container_width=True)
+
+# ---------------- Mobile-friendly pressure input fields ----------------
+st.subheader("Pressure Inputs")
+pcols = st.columns(4)
+pressures = {}
+
+# Use HTML + markdown to create colored input boxes for dark mode
+input_bg = "#f0f0f0"  # light gray for contrast in dark mode
+input_style = f"background-color:{input_bg}; color:black; padding:4px; border-radius:6px; text-align:center;"
+
+for i, leg in enumerate(["A","B","C","D"]):
+    with pcols[i]:
+        pressures[leg] = st.number_input(
+            LEG_NAMES[leg],
+            min_value=0.0,
+            step=0.1,
+            value=0.0,
+            format="%.2f"
+        )
+        # Optional: show background behind the input for contrast
+        st.markdown(f"<div style='{input_style}'></div>", unsafe_allow_html=True)
 
 
 # ---------------- Pressure Min/Actual fields ----------------
