@@ -107,7 +107,7 @@ for leg, p in pressures.items():
 # ---------------- Jacket Visualization ----------------
 st.subheader("Jacket Load Distribution")
 
-# Leg positions (x,y)
+# Leg positions (center of squares)
 leg_positions = {
     "A": (0, 1),
     "B": (1, 1),
@@ -115,14 +115,17 @@ leg_positions = {
     "D": (0, 0),
 }
 
-# Central circle position
+# Dimensions for squares
+square_size = 0.15  # half-width of the square for positioning lines
+
+# Central circle
 center_x = 0.5
 center_y = 0.5
 center_radius = 0.07
 
 fig = go.Figure()
 
-# Draw legs as markers with text
+# Draw legs as squares with text inside
 for leg, (x, y) in leg_positions.items():
     actual_pct = next(r[1] for r in results if r[0].startswith(leg))
     min_pct = limits[leg]
@@ -135,6 +138,25 @@ for leg, (x, y) in leg_positions.items():
         color = "yellow"
     else:
         color = "green"
+
+    # Text position inside square (slightly shifted to stay inside)
+    if leg in ["A", "B"]:
+        y_text = y - 0.02  # slightly lower inside top squares
+    else:
+        y_text = y + 0.02  # slightly higher inside bottom squares
+
+    fig.add_trace(
+        go.Scatter(
+            x=[x],
+            y=[y_text],
+            mode="markers+text",
+            marker=dict(
+                size=100,
+                color=color,
+                symbol="square",
+                line=dict(width=2, color="black"),
+            ),
+            text=[f"<b style='color:black'>{leg} <b style='color:black'>/</b> {actual_pct:.1_]()
 
     # Text inside square
     if leg in ["A", "B"]:
