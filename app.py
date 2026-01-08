@@ -102,7 +102,7 @@ for leg, p in pressures.items():
     pct = (p / total * 100) if total > 0 else 0
     if pct < limits[leg]:
         failed.append(LEG_NAMES[leg])
-    results.append((LEG_NAMES[leg], pct, limits[leg]))
+    results.append((LEG_NAMES[leg], pct, limits[leg], p))  # also store actual pressure
 
 # ---------------- Jacket Visualization ----------------
 st.subheader("Jacket Load Distribution")
@@ -117,34 +117,46 @@ leg_positions = {
 fig = go.Figure()
 
 for leg, (x, y) in leg_positions.items():
-    actual = next(r[1] for r in results if r[0].startswith(leg))
-    minimum = limits[leg]
+    actual_pct = next(r[1] for r in results if r[0].startswith(leg))
+    min_pct = limits[leg]
+    actual_bar = next(r[3] for r in results if r[0].startswith(leg))
 
     # Color coding
-    if actual < minimum:
+    if actual_pct < min_pct:
         color = "red"
-    elif actual < minimum + 5:
+    elif actual_pct < min_pct + 5:
         color = "yellow"
     else:
         color = "green"
 
-    # Bold letters and bold % values, bigger text
+    # Text position per leg
+    if leg in ["A", "B"]:
+        pos = "top center"
+    else:
+        pos = "bottom center"
+
+    # Add marker with bold letters and % black, hover info
     fig.add_trace(
         go.Scatter(
             x=[x],
             y=[y],
             mode="markers+text",
             marker=dict(
-                size=100,  # slightly bigger
+                size=100,
                 color=color,
                 symbol="square",
                 line=dict(width=2, color="black"),
             ),
             text=[f"<b style='color:black'>{leg}</b><br>"
-                  f"<b>{actual:.1f}%</b> / <b>{minimum:.1f}%</b>"],
-            textposition="middle center",
-            textfont=dict(size=16),  # bigger text
-            hoverinfo="skip",
+                  f"<b style='color:black'>{actual_pct:.1f}%</b> / <b style='color:black'>{min_pct:.1f}%</b>"],
+            textposition=pos,
+            textfont=dict(size=16),
+            hovertemplate=(
+                f"<b>{LEG_NAMES[leg]}</b><br>"
+                f"Pressure: {actual_bar:.2f} bar<br>"
+                f"Actual: {actual_pct:.1f}%<br>"
+                f"Min: {min_pct:.1f}%<extra></extra>"
+            ),
             showlegend=False,
         )
     )
@@ -173,15 +185,19 @@ for i, r in enumerate(results):
             f"<div style='background:{bg};padding:10px;border-radius:8px;'>"
             f"<br>"  # one line space for all legs
             f"<b>{r[0]}</b><br>"
-            f"Min: {r[2]:.1f}%<br>Actual: {r[1]:.1f}%</div>",
+            f"Min: {r[2]:.1f}%<br>"
+            f"Actual: {r[1]:.1f}%</div>",
             unsafe_allow_html=True
         )
+
+# ---------------- Vertical space before warning ----------------
+st.markdown("<br>", unsafe_allow_html=True)
+st.markdown("<br>", unsafe_allow_html=True)
 
 # ---------------- Warning ----------------
 if failed:
     st.error(
         f"⚠️ **Legs below minimum requirement:** {', '.join(failed)}\n\n"
-        " \n"  # extra space between warning and fields
         "**Suggested action:** Continue levelling jacket. "
         "Remember to fly ROV to the pressurized leg (levelling ind.)."
     )
