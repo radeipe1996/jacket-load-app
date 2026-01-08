@@ -128,20 +128,22 @@ for leg, (x, y) in leg_positions.items():
     else:
         color = "green"
 
-    # Bold black letters inside square
+    # Bold letters and bold % values, bigger text
     fig.add_trace(
         go.Scatter(
             x=[x],
             y=[y],
             mode="markers+text",
             marker=dict(
-                size=90,
+                size=100,  # slightly bigger
                 color=color,
                 symbol="square",
                 line=dict(width=2, color="black"),
             ),
-            text=[f"<b style='color:black'>{leg}</b><br>{actual:.1f}% / {minimum:.1f}%"],
+            text=[f"<b style='color:black'>{leg}</b><br>"
+                  f"<b>{actual:.1f}%</b> / <b>{minimum:.1f}%</b>"],
             textposition="middle center",
+            textfont=dict(size=16),  # bigger text
             hoverinfo="skip",
             showlegend=False,
         )
@@ -156,7 +158,7 @@ fig.add_shape(type="line", x0=0, y0=1, x1=0, y1=0)
 fig.update_layout(
     xaxis=dict(visible=False, range=[-0.3, 1.3]),
     yaxis=dict(visible=False, range=[-0.3, 1.3]),
-    height=420,
+    height=450,
     margin=dict(l=20, r=20, t=20, b=20),
 )
 
@@ -169,7 +171,7 @@ for i, r in enumerate(results):
     with cols[i]:
         st.markdown(
             f"<div style='background:{bg};padding:10px;border-radius:8px;'>"
-            f"{'<br>' if r[1] < r[2] else ''}"  # adds 1 line space if below min
+            f"<br>"  # one line space for all legs
             f"<b>{r[0]}</b><br>"
             f"Min: {r[2]:.1f}%<br>Actual: {r[1]:.1f}%</div>",
             unsafe_allow_html=True
