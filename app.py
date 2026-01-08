@@ -116,7 +116,7 @@ leg_positions = {
 }
 
 # Dimensions for squares
-square_size = 0.25  # half-width of the square
+square_size = 0.15  # half-width of the square
 
 fig = go.Figure()
 
@@ -138,7 +138,7 @@ for leg, (x, y) in leg_positions.items():
             y=[y_text],
             mode="markers+text",
             marker=dict(
-                size=100,
+                size=140,
                 color=color,
                 symbol="square",
                 line=dict(width=2, color="black"),
