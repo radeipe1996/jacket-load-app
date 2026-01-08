@@ -107,12 +107,12 @@ for leg, p in pressures.items():
 # ---------------- Jacket Visualization ----------------
 st.subheader("Jacket Load Distribution")
 
-# Leg positions (closer together)
+# Leg positions (brought closer to the center)
 leg_positions = {
-    "A": (0.25, 0.75),  # top-left
-    "B": (0.75, 0.75),  # top-right
-    "C": (0.75, 0.25),  # bottom-right
-    "D": (0.25, 0.25),  # bottom-left
+    "A": (0.35, 0.65),  # top-left
+    "B": (0.65, 0.65),  # top-right
+    "C": (0.65, 0.35),  # bottom-right
+    "D": (0.35, 0.35),  # bottom-left
 }
 
 # Dimensions for squares
@@ -126,7 +126,7 @@ for leg, (x, y) in leg_positions.items():
     min_pct = limits[leg]
     actual_bar = next(r[3] for r in results if r[0].startswith(leg))
 
-    # Color coding
+    # Color coding: green if above min, red if below
     color = "green" if actual_pct >= min_pct else "red"
 
     # Text inside square (slightly shifted)
@@ -157,9 +157,9 @@ for leg, (x, y) in leg_positions.items():
         )
     )
 
-# ---------------- Add "BL" small square outside BP (leg A) ----------------
-bl_x = leg_positions["A"][0] - 0.12
-bl_y = leg_positions["A"][1] + 0.05
+# ---------------- Add "BL" small square outside left of leg A ----------------
+bl_x = leg_positions["A"][0] - 0.12  # left of leg A
+bl_y = leg_positions["A"][1]          # vertically aligned with A
 fig.add_trace(
     go.Scatter(
         x=[bl_x],
@@ -183,11 +183,12 @@ fig.update_layout(
     xaxis=dict(visible=False, range=[0, 1]),
     yaxis=dict(visible=False, range=[0, 1]),
     height=500,
-    width=500,  # make visualization square
+    width=500,  # visualization remains square
     margin=dict(l=20, r=20, t=20, b=20),
 )
 
 st.plotly_chart(fig, use_container_width=True)
+
 
 
 # ---------------- Pressure Min/Actual fields ----------------
