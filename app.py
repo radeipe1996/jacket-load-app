@@ -107,16 +107,16 @@ for leg, p in pressures.items():
 # ---------------- Jacket Visualization ----------------
 st.subheader("Jacket Load Distribution")
 
-# Leg positions (center of squares)
+# Leg positions (closer together)
 leg_positions = {
-    "A": (0, 1),
-    "B": (1, 1),
-    "C": (1, 0),
-    "D": (0, 0),
+    "A": (0.25, 0.75),  # top-left
+    "B": (0.75, 0.75),  # top-right
+    "C": (0.75, 0.25),  # bottom-right
+    "D": (0.25, 0.25),  # bottom-left
 }
 
 # Dimensions for squares
-square_size = 0.15  # half-width for potential future lines
+square_size = 0.15  # half-width of the square
 
 fig = go.Figure()
 
@@ -180,14 +180,15 @@ fig.add_trace(
 )
 
 fig.update_layout(
-    xaxis=dict(visible=False, range=[-0.3, 1.3]),
-    yaxis=dict(visible=False, range=[-0.3, 1.3]),
+    xaxis=dict(visible=False, range=[0, 1]),
+    yaxis=dict(visible=False, range=[0, 1]),
     height=500,
     width=500,  # make visualization square
     margin=dict(l=20, r=20, t=20, b=20),
 )
 
 st.plotly_chart(fig, use_container_width=True)
+
 
 # ---------------- Pressure Min/Actual fields ----------------
 cols = st.columns(4)
