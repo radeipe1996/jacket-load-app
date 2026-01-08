@@ -83,9 +83,9 @@ JACKETS = {
 st.title("Offshore Jacket Load Distribution")
 st.caption("Real-time monitoring based on levelling cylinder pressures")
 
+# ---------------- Input ----------------
 jacket_id = st.selectbox("Jacket ID", sorted(JACKETS.keys()))
 case = st.radio("Case", ["EAC", "OBS"], horizontal=True)
-
 limits = JACKETS[jacket_id][case]
 
 cols = st.columns(4)
@@ -104,13 +104,14 @@ for leg, p in pressures.items():
         failed.append(LEG_NAMES[leg])
     results.append((LEG_NAMES[leg], pct, limits[leg]))
 
+# ---------------- Jacket Visualization ----------------
 st.subheader("Jacket Load Distribution")
 
 leg_positions = {
-    "A": (0, 1),  # top-left
-    "B": (1, 1),  # top-right
-    "C": (1, 0),  # bottom-right
-    "D": (0, 0),  # bottom-left
+    "A": (0, 1),
+    "B": (1, 1),
+    "C": (1, 0),
+    "D": (0, 0),
 }
 
 fig = go.Figure()
@@ -119,8 +120,15 @@ for leg, (x, y) in leg_positions.items():
     actual = next(r[1] for r in results if r[0].startswith(leg))
     minimum = limits[leg]
 
-    color = "red" if actual < minimum else "gold"
+    # Color coding
+    if actual < minimum:
+        color = "red"
+    elif actual < minimum + 5:
+        color = "yellow"
+    else:
+        color = "green"
 
+    # Bold black letters inside square
     fig.add_trace(
         go.Scatter(
             x=[x],
@@ -132,10 +140,7 @@ for leg, (x, y) in leg_positions.items():
                 symbol="square",
                 line=dict(width=2, color="black"),
             ),
-            text=[
-                f"{LEG_NAMES[leg]}<br>"
-                f"{actual:.1f}% / {minimum:.1f}%"
-            ],
+            text=[f"<b style='color:black'>{leg}</b><br>{actual:.1f}% / {minimum:.1f}%"],
             textposition="middle center",
             hoverinfo="skip",
             showlegend=False,
@@ -157,23 +162,26 @@ fig.update_layout(
 
 st.plotly_chart(fig, use_container_width=True)
 
-
+# ---------------- Pressure Min/Actual fields ----------------
 cols = st.columns(4)
 for i, r in enumerate(results):
     bg = "#ffe6e6" if r[1] < r[2] else "#fff8dc"
     with cols[i]:
         st.markdown(
             f"<div style='background:{bg};padding:10px;border-radius:8px;'>"
-            f"<b>{r[0]}</b><br>Min: {r[2]:.1f}%<br>Actual: {r[1]:.1f}%</div>",
+            f"{'<br>' if r[1] < r[2] else ''}"  # adds 1 line space if below min
+            f"<b>{r[0]}</b><br>"
+            f"Min: {r[2]:.1f}%<br>Actual: {r[1]:.1f}%</div>",
             unsafe_allow_html=True
         )
 
+# ---------------- Warning ----------------
 if failed:
     st.error(
         f"⚠️ **Legs below minimum requirement:** {', '.join(failed)}\n\n"
+        " \n"  # extra space between warning and fields
         "**Suggested action:** Continue levelling jacket. "
         "Remember to fly ROV to the pressurized leg (levelling ind.)."
     )
 else:
     st.success("All legs meet minimum load requirements.")
-
