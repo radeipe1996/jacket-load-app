@@ -125,15 +125,15 @@ html_layout = f"""
     gap:8px;">
 
     <!-- BL -->
-   <div style="
+  <div style="
     background-color:#7f8c8d;
     color:white;
-    padding:6px;
+    padding:4px;
     border-radius:6px;
     text-align:center;
-    font-size:11px;
-    width:40px;
-    height:40px;
+    font-size:11px;   /* BL text size UNCHANGED */
+    width:34px;
+    height:34px;
     display:flex;
     align-items:center;
     justify-content:center;">
