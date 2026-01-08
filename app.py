@@ -118,9 +118,13 @@ html_layout = f"""
         grid-template-columns: 1fr 1fr;
         gap:12px;">
 
-        <!-- BP (A) + BL -->
-        <div>
-    {leg_box("BP (A)", percentages["A"], min_targets["A"])}
+        <!-- BP (A) with BL on the left -->
+<div style="
+    display:flex;
+    align-items:center;
+    gap:8px;">
+
+    <!-- BL -->
     <div style="
         background-color:#7f8c8d;
         color:white;
@@ -128,10 +132,19 @@ html_layout = f"""
         border-radius:8px;
         text-align:center;
         font-size:12px;
-        width:60px;
-        margin-top:6px;">
+        width:50px;
+        height:50px;
+        display:flex;
+        align-items:center;
+        justify-content:center;">
         BL
     </div>
+
+    <!-- BP (A) -->
+    <div style="flex:1;">
+        {leg_box("BP (A)", percentages["A"], min_targets["A"])}
+    </div>
+
 </div>
 
         <!-- BQ (B) -->
