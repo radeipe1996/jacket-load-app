@@ -4,17 +4,6 @@ import plotly.graph_objects as go
 
 st.set_page_config(page_title="Jacket Load Distribution", layout="wide")
 
-# -----------------------------
-# Jacket minimum % database
-# (Relative weight distribution)
-# -----------------------------
-JACKETS = {
-    "H05-CL1": {
-        "EAC": {"A": 11.6, "B": 11.4, "C": 22.9, "D": 12.3},
-        "OBS": {"A": 17.3, "B": 20.1, "C": 22.9, "D": 17.0},
-    }
-}
-
 LEG_NAMES = {
     "A": "A (BP)",
     "B": "B (BQ)",
@@ -22,27 +11,42 @@ LEG_NAMES = {
     "D": "D (AP)",
 }
 
+# -------------------------------------------------
+# FULL JACKET DATABASE
+# Relative weight distribution EAC / OBS [%]
+# -------------------------------------------------
+JACKETS = {
+    "G05-CL1": {"EAC": {"A": 11.6, "B": 11.4, "C": 22.9, "D": 12.3}, "OBS": {"A": 17.3, "B": 20.1, "C": 22.9, "D": 17.0}},
+    "H05-CL1": {"EAC": {"A": 11.6, "B": 11.4, "C": 22.9, "D": 12.3}, "OBS": {"A": 17.3, "B": 20.1, "C": 22.9, "D": 17.0}},
+    "J05-CL2": {"EAC": {"A": 11.6, "B": 11.4, "C": 22.9, "D": 12.3}, "OBS": {"A": 17.4, "B": 20.1, "C": 22.9, "D": 16.9}},
+    "J04-CL2": {"EAC": {"A": 11.6, "B": 11.4, "C": 22.8, "D": 12.3}, "OBS": {"A": 17.4, "B": 20.1, "C": 22.8, "D": 16.9}},
+    "K04-CL2": {"EAC": {"A": 11.6, "B": 11.5, "C": 22.8, "D": 12.3}, "OBS": {"A": 17.4, "B": 20.1, "C": 22.8, "D": 16.9}},
+    "L04-CL2": {"EAC": {"A": 11.6, "B": 11.2, "C": 22.8, "D": 12.6}, "OBS": {"A": 17.3, "B": 19.6, "C": 22.8, "D": 17.4}},
+    "M04-CL2": {"EAC": {"A": 11.6, "B": 11.2, "C": 22.9, "D": 12.6}, "OBS": {"A": 17.4, "B": 19.6, "C": 22.9, "D": 17.4}},
+    "L05-CL2": {"EAC": {"A": 11.6, "B": 11.2, "C": 22.8, "D": 12.6}, "OBS": {"A": 17.3, "B": 19.6, "C": 22.8, "D": 17.4}},
+    "M05-CL2": {"EAC": {"A": 11.6, "B": 11.2, "C": 22.8, "D": 12.6}, "OBS": {"A": 17.4, "B": 19.6, "C": 22.8, "D": 17.4}},
+    "F05-CL3": {"EAC": {"A": 11.6, "B": 11.4, "C": 22.9, "D": 12.4}, "OBS": {"A": 17.3, "B": 20.1, "C": 22.9, "D": 17.0}},
+    "D05-CL3": {"EAC": {"A": 11.9, "B": 11.4, "C": 22.3, "D": 12.3}, "OBS": {"A": 17.8, "B": 20.1, "C": 22.3, "D": 17.0}},
+    "E05-CL3": {"EAC": {"A": 11.6, "B": 11.4, "C": 22.9, "D": 12.4}, "OBS": {"A": 17.3, "B": 20.1, "C": 22.9, "D": 17.0}},
+    "E04-CL3": {"EAC": {"A": 11.6, "B": 11.4, "C": 22.9, "D": 12.4}, "OBS": {"A": 17.3, "B": 20.1, "C": 22.9, "D": 17.0}},
+    "G04-CL3": {"EAC": {"A": 11.6, "B": 11.4, "C": 22.9, "D": 12.4}, "OBS": {"A": 17.3, "B": 20.1, "C": 22.9, "D": 17.0}},
+}
+
+# -------------------------------------------------
+# UI
+# -------------------------------------------------
 st.title("Offshore Jacket Load Distribution")
 st.caption("Real-time monitoring based on levelling cylinder pressures")
 
-# -----------------------------
-# Top selectors
-# -----------------------------
 col1, col2 = st.columns(2)
-
 with col1:
-    jacket_id = st.selectbox("Jacket ID", list(JACKETS.keys()))
-
+    jacket_id = st.selectbox("Jacket ID", sorted(JACKETS.keys()))
 with col2:
     case = st.radio("Case", ["EAC", "OBS"], horizontal=True)
 
 min_limits = JACKETS[jacket_id][case]
 
-# -----------------------------
-# Pressure inputs
-# -----------------------------
 st.subheader("Pressure Inputs")
-
 pcols = st.columns(4)
 pressures = {}
 
@@ -57,95 +61,66 @@ for i, leg in enumerate(["A", "B", "C", "D"]):
         )
 
 total_pressure = sum(pressures.values())
-
 st.markdown(f"**Total Pressure:** `{total_pressure:.2f} bar`")
 
-# -----------------------------
-# Load distribution
-# -----------------------------
 results = []
 failed_legs = []
 
 for leg, p in pressures.items():
     pct = (p / total_pressure * 100) if total_pressure > 0 else 0
     min_pct = min_limits[leg]
-    ok = pct >= min_pct
-
-    if not ok:
+    if pct < min_pct:
         failed_legs.append(LEG_NAMES[leg])
-
     results.append({
         "Leg": LEG_NAMES[leg],
-        "Pressure (bar)": p,
         "Actual %": pct,
-        "Min %": min_pct,
-        "Status": "OK" if ok else "Below minimum"
+        "Min %": min_pct
     })
 
-df = pd.DataFrame(results)
-
-# -----------------------------
-# Visualization
-# -----------------------------
 st.subheader("Jacket Visualization")
 
-colors = []
-for row in results:
-    colors.append("red" if row["Actual %"] < row["Min %"] else "gold")
+colors = ["red" if r["Actual %"] < r["Min %"] else "gold" for r in results]
 
 fig = go.Figure()
-
-x_pos = [0, 1, 2, 3]
-for i, leg in enumerate(["A", "B", "C", "D"]):
+for i, r in enumerate(results):
     fig.add_trace(go.Bar(
-        x=[x_pos[i]],
+        x=[i],
         y=[1],
-        width=0.4,
         marker_color=colors[i],
-        name=LEG_NAMES[leg],
-        text=f"{results[i]['Actual %']:.1f}%",
+        text=f"{r['Actual %']:.1f}%",
         textposition="outside"
     ))
 
 fig.update_layout(
     xaxis=dict(
-        tickmode='array',
-        tickvals=x_pos,
-        ticktext=[LEG_NAMES[l] for l in ["A", "B", "C", "D"]],
-        showgrid=False
+        tickmode="array",
+        tickvals=list(range(4)),
+        ticktext=[r["Leg"] for r in results]
     ),
     yaxis=dict(visible=False),
-    height=350,
-    showlegend=False
+    showlegend=False,
+    height=350
 )
 
 st.plotly_chart(fig, use_container_width=True)
 
-# -----------------------------
-# Minimum load requirements
-# -----------------------------
 st.subheader("Minimum Load Requirements")
+cols = st.columns(4)
 
-mcols = st.columns(4)
-
-for i, row in df.iterrows():
-    bg = "#ffe6e6" if row["Status"] == "Below minimum" else "#fff8dc"
-    with mcols[i]:
+for i, r in enumerate(results):
+    bg = "#ffe6e6" if r["Actual %"] < r["Min %"] else "#fff8dc"
+    with cols[i]:
         st.markdown(
             f"""
             <div style="background-color:{bg}; padding:12px; border-radius:8px;">
-            <b>{row['Leg']}</b><br>
-            Min Required: <b>{row['Min %']:.1f}%</b><br>
-            Actual: <b>{row['Actual %']:.1f}%</b><br>
-            Status: <b>{row['Status']}</b>
+            <b>{r['Leg']}</b><br>
+            Min Required: <b>{r['Min %']:.1f}%</b><br>
+            Actual: <b>{r['Actual %']:.1f}%</b>
             </div>
             """,
             unsafe_allow_html=True
         )
 
-# -----------------------------
-# Warning box
-# -----------------------------
 if failed_legs:
     st.error(
         f"""
@@ -158,4 +133,4 @@ if failed_legs:
 else:
     st.success("All legs meet minimum load requirements.")
 
-st.caption("Conceptual offshore monitoring tool – use in accordance with project procedures.")
+st.caption("Operational monitoring tool – use in accordance with project procedures.")
