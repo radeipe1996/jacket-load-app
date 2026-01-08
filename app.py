@@ -156,27 +156,7 @@ for leg, (x, y) in leg_positions.items():
                 symbol="square",
                 line=dict(width=2, color="black"),
             ),
-            text=[f"<b style='color:black'>{leg} <b style='color:black'>/</b> {actual_pct:.1_]()
-
-    # Text inside square
-    if leg in ["A", "B"]:
-        y_offset = 0.85
-    else:
-        y_offset = 0.15
-
-    fig.add_trace(
-        go.Scatter(
-            x=[x],
-            y=[y_offset],
-            mode="markers+text",
-            marker=dict(
-                size=100,
-                color=color,
-                symbol="square",
-                line=dict(width=2, color="black"),
-            ),
-            text=[f"<b style='color:black'>{leg}</b><br>"
-                  f"<b style='color:black'>{actual_pct:.1f}%</b> / <b style='color:black'>{min_pct:.1f}%</b>"],
+            text=[f"<b style='color:black'>{leg} <b style='color:black'>/</b> {actual_pct:.1f}%</b> / <b style='color:black'>{min_pct:.1f}%</b>"],
             textposition="middle center",
             textfont=dict(size=16),
             hovertemplate=(
@@ -189,11 +169,25 @@ for leg, (x, y) in leg_positions.items():
         )
     )
 
-# ---------------- Draw diagonal lines to center ----------------
+# ---------------- Draw diagonal lines from outer middle of squares to center ----------------
 for leg, (x, y) in leg_positions.items():
+    # Connect to outer middle of square
+    if leg == "A":  # left top
+        start_x = x - square_size/2
+        start_y = y
+    elif leg == "B":  # right top
+        start_x = x + square_size/2
+        start_y = y
+    elif leg == "C":  # right bottom
+        start_x = x + square_size/2
+        start_y = y
+    else:  # D left bottom
+        start_x = x - square_size/2
+        start_y = y
+
     fig.add_shape(
         type="line",
-        x0=x, y0=y,
+        x0=start_x, y0=start_y,
         x1=center_x, y1=center_y,
         line=dict(color="black", width=2)
     )
@@ -233,6 +227,7 @@ fig.update_layout(
     xaxis=dict(visible=False, range=[-0.3, 1.3]),
     yaxis=dict(visible=False, range=[-0.3, 1.3]),
     height=500,
+    width=500,  # make visualization square
     margin=dict(l=20, r=20, t=20, b=20),
 )
 
