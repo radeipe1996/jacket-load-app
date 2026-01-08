@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 
 # ----------------------------
 # CONFIG
@@ -98,78 +99,73 @@ def leg_box(label, value, minimum):
         border-radius:12px;
         text-align:center;
         font-size:14px;
-        min-height:90px;">
+        min-height:90px;
+        box-sizing:border-box;">
         <strong>{label}</strong><br>
         {value:.1f}%<br>
         <span style="font-size:12px;">Min: {minimum:.1f}%</span>
     </div>
     """
 
-leg_A = leg_box("BP (A)", percentages["A"], min_targets["A"])
-leg_B = leg_box("BQ (B)", percentages["B"], min_targets["B"])
-leg_C = leg_box("AQ (C)", percentages["C"], min_targets["C"])
-leg_D = leg_box("AP (D)", percentages["D"], min_targets["D"])
-
-bl_box = """
+html_layout = f"""
 <div style="
-    background-color:#7f8c8d;
-    color:white;
-    padding:8px;
-    border-radius:8px;
-    text-align:center;
-    font-size:12px;
-    width:60px;
-    margin-top:6px;">
-    BL
-</div>
-"""
-
-center_box = f"""
-<div style="
-    background-color:#34495e;
-    color:white;
-    padding:12px;
-    border-radius:12px;
-    text-align:center;
-    font-size:14px;">
-    <strong>{jacket_id}</strong>
-</div>
-"""
-
-st.markdown(f"""
-<div style="
-    display:grid;
-    grid-template-columns: 1fr 1fr;
-    gap:12px;
+    font-family: Arial, sans-serif;
     max-width:360px;
     margin:auto;">
 
-    <!-- BP (A) + BL -->
-    <div>
-        {leg_A}
-        {bl_box}
+    <div style="
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap:12px;">
+
+        <!-- BP (A) + BL -->
+        <div>
+            {leg_box("BP (A)", percentages["A"], min_targets["A"])}
+            <div style="
+                background-color:#7f8c8d;
+                color:white;
+                padding:8px;
+                border-radius:8px;
+                text-align:center;
+                font-size:12px;
+                width:60px;
+                margin-top:6px;">
+                BL
+            </div>
+        </div>
+
+        <!-- BQ (B) -->
+        <div>
+            {leg_box("BQ (B)", percentages["B"], min_targets["B"])}
+        </div>
+
+        <!-- AQ (C) -->
+        <div>
+            {leg_box("AQ (C)", percentages["C"], min_targets["C"])}
+        </div>
+
+        <!-- AP (D) -->
+        <div>
+            {leg_box("AP (D)", percentages["D"], min_targets["D"])}
+        </div>
     </div>
 
-    <!-- BQ (B) -->
-    <div>
-        {leg_B}
+    <!-- Center Jacket ID -->
+    <div style="
+        margin-top:14px;
+        background-color:#34495e;
+        color:white;
+        padding:12px;
+        border-radius:12px;
+        text-align:center;
+        font-size:14px;">
+        <strong>{jacket_id}</strong>
     </div>
 
-    <!-- AQ (C) -->
-    <div>
-        {leg_C}
-    </div>
-
-    <!-- AP (D) -->
-    <div>
-        {leg_D}
-    </div>
 </div>
+"""
 
-<div style="margin-top:14px; text-align:center;">
-    {center_box}
-</div>
-""", unsafe_allow_html=True)
+components.html(html_layout, height=420)
 
 # ----------------------------
 # WARNINGS
