@@ -107,7 +107,7 @@ for leg, p in pressures.items():
 # ---------------- Jacket Visualization ----------------
 st.subheader("Jacket Load Distribution")
 
-# Leg positions (brought closer to the center)
+# Leg positions (compact)
 leg_positions = {
     "A": (0.35, 0.65),  # top-left
     "B": (0.65, 0.65),  # top-right
@@ -116,7 +116,7 @@ leg_positions = {
 }
 
 # Dimensions for squares
-square_size = 0.15  # half-width of the square
+square_size = 0.15  # for potential future connections
 
 fig = go.Figure()
 
@@ -138,7 +138,7 @@ for leg, (x, y) in leg_positions.items():
             y=[y_text],
             mode="markers+text",
             marker=dict(
-                size=140,
+                size=140,  # increased from 100 → bigger squares
                 color=color,
                 symbol="square",
                 line=dict(width=2, color="black"),
@@ -146,7 +146,7 @@ for leg, (x, y) in leg_positions.items():
             text=[f"<b style='color:black'>{leg}</b><br>"
                   f"<b style='color:black'>{actual_pct:.1f}%</b> / <b style='color:black'>{min_pct:.1f}%</b>"],
             textposition="middle center",
-            textfont=dict(size=16),
+            textfont=dict(size=18),  # slightly larger font
             hovertemplate=(
                 f"<b>{LEG_NAMES[leg]}</b><br>"
                 f"Pressure: {actual_bar:.2f} bar<br>"
@@ -158,8 +158,8 @@ for leg, (x, y) in leg_positions.items():
     )
 
 # ---------------- Add "BL" small square outside left of leg A ----------------
-bl_x = leg_positions["A"][0] - 0.12  # left of leg A
-bl_y = leg_positions["A"][1]          # vertically aligned with A
+bl_x = leg_positions["A"][0] - 0.14  # slightly further left to accommodate bigger square
+bl_y = leg_positions["A"][1]
 fig.add_trace(
     go.Scatter(
         x=[bl_x],
@@ -183,12 +183,11 @@ fig.update_layout(
     xaxis=dict(visible=False, range=[0, 1]),
     yaxis=dict(visible=False, range=[0, 1]),
     height=500,
-    width=500,  # visualization remains square
+    width=500,
     margin=dict(l=20, r=20, t=20, b=20),
 )
 
 st.plotly_chart(fig, use_container_width=True)
-
 
 
 # ---------------- Pressure Min/Actual fields ----------------
