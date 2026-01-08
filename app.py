@@ -125,20 +125,20 @@ html_layout = f"""
     gap:8px;">
 
     <!-- BL -->
-    <div style="
-        background-color:#7f8c8d;
-        color:white;
-        padding:8px;
-        border-radius:8px;
-        text-align:center;
-        font-size:12px;
-        width:50px;
-        height:50px;
-        display:flex;
-        align-items:center;
-        justify-content:center;">
-        BL
-    </div>
+   <div style="
+    background-color:#7f8c8d;
+    color:white;
+    padding:6px;
+    border-radius:6px;
+    text-align:center;
+    font-size:11px;
+    width:40px;
+    height:40px;
+    display:flex;
+    align-items:center;
+    justify-content:center;">
+    BL
+</div>
 
     <!-- BP (A) -->
     <div style="flex:1;">
