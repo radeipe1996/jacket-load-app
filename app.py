@@ -94,52 +94,79 @@ def leg_box(label, value, minimum):
     <div style="
         background-color:{color};
         color:white;
-        padding:10px;
-        border-radius:10px;
+        padding:12px;
+        border-radius:12px;
         text-align:center;
-        font-size:14px;">
+        font-size:14px;
+        min-height:90px;">
         <strong>{label}</strong><br>
         {value:.1f}%<br>
-        Min: {minimum:.1f}%
+        <span style="font-size:12px;">Min: {minimum:.1f}%</span>
     </div>
     """
+
+leg_A = leg_box("BP (A)", percentages["A"], min_targets["A"])
+leg_B = leg_box("BQ (B)", percentages["B"], min_targets["B"])
+leg_C = leg_box("AQ (C)", percentages["C"], min_targets["C"])
+leg_D = leg_box("AP (D)", percentages["D"], min_targets["D"])
+
+bl_box = """
+<div style="
+    background-color:#7f8c8d;
+    color:white;
+    padding:8px;
+    border-radius:8px;
+    text-align:center;
+    font-size:12px;
+    width:60px;
+    margin-top:6px;">
+    BL
+</div>
+"""
 
 center_box = f"""
 <div style="
     background-color:#34495e;
     color:white;
-    padding:10px;
-    border-radius:10px;
+    padding:12px;
+    border-radius:12px;
     text-align:center;
     font-size:14px;">
     <strong>{jacket_id}</strong>
 </div>
 """
 
-bl_box = """
-<div style="
-    background-color:#7f8c8d;
-    color:white;
-    padding:6px;
-    border-radius:6px;
-    text-align:center;
-    font-size:12px;">
-    BL
-</div>
-"""
-
 st.markdown(f"""
-<div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+<div style="
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:12px;
+    max-width:360px;
+    margin:auto;">
+
+    <!-- BP (A) + BL -->
     <div>
-        {leg_box("BP (A)", percentages["A"], min_targets["A"])}
-        <div style="margin-top:6px; width:60px;">{bl_box}</div>
+        {leg_A}
+        {bl_box}
     </div>
-    {leg_box("BQ (B)", percentages["B"], min_targets["B"])}
-    {leg_box("AQ (C)", percentages["C"], min_targets["C"])}
-    {leg_box("AP (D)", percentages["D"], min_targets["D"])}
+
+    <!-- BQ (B) -->
+    <div>
+        {leg_B}
+    </div>
+
+    <!-- AQ (C) -->
+    <div>
+        {leg_C}
+    </div>
+
+    <!-- AP (D) -->
+    <div>
+        {leg_D}
+    </div>
 </div>
 
-<div style="margin-top:15px;">
+<div style="margin-top:14px; text-align:center;">
     {center_box}
 </div>
 """, unsafe_allow_html=True)
