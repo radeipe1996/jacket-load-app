@@ -40,7 +40,7 @@ LEG_LABELS = {
 # ----------------------------
 # UI – HEADER
 # ----------------------------
-st.title("🦺 Jacket Load Distribution")
+st.title("⚖️ Jacket Load Distribution")
 st.caption("Real-time load monitoring during offshore installation")
 
 # ----------------------------
@@ -120,19 +120,19 @@ html_layout = f"""
 
         <!-- BP (A) + BL -->
         <div>
-            {leg_box("BP (A)", percentages["A"], min_targets["A"])}
-            <div style="
-                background-color:#7f8c8d;
-                color:white;
-                padding:8px;
-                border-radius:8px;
-                text-align:center;
-                font-size:12px;
-                width:60px;
-                margin-top:6px;">
-                BL
-            </div>
-        </div>
+    {leg_box("BP (A)", percentages["A"], min_targets["A"])}
+    <div style="
+        background-color:#7f8c8d;
+        color:white;
+        padding:8px;
+        border-radius:8px;
+        text-align:center;
+        font-size:12px;
+        width:60px;
+        margin-top:6px;">
+        BL
+    </div>
+</div>
 
         <!-- BQ (B) -->
         <div>
