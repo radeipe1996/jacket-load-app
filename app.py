@@ -163,7 +163,7 @@ for leg, (x, y) in leg_positions.items():
 
 # ---------------- Draw jacket frame ----------------
 # Offset to connect squares at their mid-height
-offset_min = 0.05
+offset_min = 0.1
 offset_max = 0.95
 
 fig.add_shape(type="line", x0=offset_min, y0=offset_min, x1=offset_max, y1=offset_min, line=dict(color="black", width=2))  # bottom
