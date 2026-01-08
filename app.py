@@ -175,7 +175,7 @@ fig.update_layout(
     xaxis=dict(visible=False, range=[-0.3, 1.3]),
     yaxis=dict(visible=False, range=[-0.3, 1.3]),
     height=450,
-    margin=dict(l=20, r=20, t=20, b=20),
+    margin=dict(l=10, r=10, t=10, b=10),
 )
 
 st.plotly_chart(fig, use_container_width=True)
