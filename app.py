@@ -164,13 +164,19 @@ for leg, (x, y) in leg_positions.items():
 # ---------------- Draw jacket frame ----------------
 # Offset to connect squares at their mid-height
 offset_min = 0.15
-offset_max = 0.85
+offset_max = 0.50
 
 fig.add_shape(type="line", x0=offset_min, y0=offset_min, x1=offset_max, y1=offset_min, line=dict(color="black", width=2))  # bottom
 fig.add_shape(type="line", x0=offset_max, y0=offset_min, x1=offset_max, y1=offset_max, line=dict(color="black", width=2))  # right
 fig.add_shape(type="line", x0=offset_max, y0=offset_max, x1=offset_min, y1=offset_max, line=dict(color="black", width=2))  # top
 fig.add_shape(type="line", x0=offset_min, y0=offset_max, x1=offset_min, y1=offset_min, line=dict(color="black", width=2))  # left
 
+fig.update_layout(
+    xaxis=dict(visible=False, range=[-0.3, 1.3]),
+    yaxis=dict(visible=False, range=[-0.3, 1.3]),
+    height=450,
+    margin=dict(l=20, r=20, t=20, b=20),
+)
 st.plotly_chart(fig, use_container_width=True)
 
 # ---------------- Pressure Min/Actual fields ----------------
