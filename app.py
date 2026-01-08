@@ -131,7 +131,7 @@ for leg, (x, y) in leg_positions.items():
 
     # Text position per leg
     if leg in ["A", "B"]:
-        pos = "top center"
+        pos = "top"
     else:
         pos = "bottom center"
 
