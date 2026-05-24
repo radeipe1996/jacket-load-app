@@ -12,48 +12,64 @@ st.set_page_config(
     page_title="Jacket Load Distribution",
     layout="centered"
 )
-# Custom overlay modal to completely bypass browser "says" headers
-components.html(
-    """
-    <div id="customModal" style="
-        position: fixed; 
-        top: 0; left: 0; width: 100%; height: 100%; 
-        background-color: rgba(0,0,0,0.75); 
-        z-index: 999999; 
-        display: flex; 
-        justify-content: center; 
-        align-items: center;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-        <div style="
-            background-color: white; 
-            padding: 30px; 
-            border-radius: 12px; 
-            max-width: 400px; 
-            width: 85%;
-            text-align: center; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
-            <div style="font-size: 16px; color: #333; line-height: 1.5; margin-bottom: 24px; white-space: pre-line;">
-                Click Ok to continue.
+# Initialize a session key so the modal only shows up once per page load
+if "popup_acknowledged" not in st.session_state:
+    st.session_state["popup_acknowledged"] = False
 
-                By clicking "Ok" I also admit that Raul is the prettiest PE.
+if not st.session_state["popup_acknowledged"]:
+    # Using st.components.v1.html with full height allows the overlay to stretch across the viewport
+    components.html(
+        """
+        <div id="customModal" style="
+            position: fixed; 
+            top: 0; left: 0; width: 100vw; height: 100vh; 
+            background-color: rgba(0,0,0,0.85); 
+            z-index: 999999; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+            <div style="
+                background-color: white; 
+                padding: 35px; 
+                border-radius: 12px; 
+                max-width: 400px; 
+                width: 85%;
+                text-align: center; 
+                box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                <div style="font-size: 16px; color: #2c3e50; line-height: 1.6; margin-bottom: 28px; white-space: pre-line; font-weight: 500;">
+                    Click Ok to continue.
+
+                    By clicking "Ok" I also admit that Raul is the prettiest PE.
+                </div>
+                <button onclick="window.parent.document.dispatchEvent(new CustomEvent('closeModal')); document.getElementById('customModal').style.display='none';" style="
+                    background-color: #2ecc71; 
+                    color: white; 
+                    border: none; 
+                    padding: 12px 40px; 
+                    font-size: 15px; 
+                    font-weight: bold;
+                    border-radius: 6px; 
+                    cursor: pointer;
+                    box-shadow: 0 4px 6px rgba(46, 204, 113, 0.2);
+                    transition: all 0.2s;">
+                    Ok
+                </button>
             </div>
-            <button onclick="document.getElementById('customModal').style.display='none'" style="
-                background-color: #2ecc71; 
-                color: white; 
-                border: none; 
-                padding: 10px 30px; 
-                font-size: 15px; 
-                font-weight: bold;
-                border-radius: 6px; 
-                cursor: pointer;
-                transition: background 0.2s;">
-                Ok
-            </button>
         </div>
-    </div>
-    """,
-    height=600,
-)
+        <script>
+            // Communicate back to Streamlit when they click OK so it unmounts cleanly
+            document.querySelector('button').addEventListener('click', function() {
+                window.parent.postMessage({type: 'streamlit:popup_close'}, '*');
+            });
+        </script>
+        """,
+        height=600, # Give it space to render the overlay globally
+    )
+    
+    # Check for the close signal from our JavaScript to update the app state
+    import json
+    from streamlit_javascript import st_javascript
 
 if "show_register" not in st.session_state:
     st.session_state["show_register"] = False
