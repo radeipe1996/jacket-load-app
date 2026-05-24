@@ -52,7 +52,7 @@ components.html(
         </div>
     </div>
     """,
-    height=0,
+    height=600,
 )
 
 if "show_register" not in st.session_state:
