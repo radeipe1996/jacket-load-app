@@ -11,17 +11,47 @@ import time
 st.set_page_config(
     page_title="Jacket Load Distribution",
     layout="centered"
-)
-
-# Initial Pop Up (JavaScript Alert)
+# Custom overlay modal to completely bypass browser "says" headers
 components.html(
     """
-    <script>
-        alert("Click Ok to continue\\n\\nBy clicking \\"Ok\\" I also admit that Raul is the prettiest PE");
-    </script>
+    <div id="customModal" style="
+        position: fixed; 
+        top: 0; left: 0; width: 100%; height: 100%; 
+        background-color: rgba(0,0,0,0.75); 
+        z-index: 999999; 
+        display: flex; 
+        justify-content: center; 
+        align-items: center;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+        <div style="
+            background-color: white; 
+            padding: 30px; 
+            border-radius: 12px; 
+            max-width: 400px; 
+            width: 85%;
+            text-align: center; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+            <div style="font-size: 16px; color: #333; line-height: 1.5; margin-bottom: 24px; white-space: pre-line;">
+                Click Ok to continue.
+
+                By clicking "Ok" I also admit that Raul is the prettiest PE.
+            </div>
+            <button onclick="document.getElementById('customModal').style.display='none'" style="
+                background-color: #2ecc71; 
+                color: white; 
+                border: none; 
+                padding: 10px 30px; 
+                font-size: 15px; 
+                font-weight: bold;
+                border-radius: 6px; 
+                cursor: pointer;
+                transition: background 0.2s;">
+                Ok
+            </button>
+        </div>
+    </div>
     """,
     height=0,
-    width=0,
 )
 
 if "show_register" not in st.session_state:
