@@ -13,6 +13,17 @@ st.set_page_config(
     layout="centered"
 )
 
+# Initial Pop Up (JavaScript Alert)
+components.html(
+    """
+    <script>
+        alert("Click Ok to continue\\n\\nBy clicking \\"Ok\\" I also admit that Raul is the prettiest PE");
+    </script>
+    """,
+    height=0,
+    width=0,
+)
+
 if "show_register" not in st.session_state:
     st.session_state["show_register"] = False
 
