@@ -11,6 +11,7 @@ import time
 st.set_page_config(
     page_title="Jacket Load Distribution",
     layout="centered"
+)
 # Custom overlay modal to completely bypass browser "says" headers
 components.html(
     """
